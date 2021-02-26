@@ -2,6 +2,20 @@
 
 ## Setup
 
+Your working directory should now be 01-read_processing 
+
+Install the read processing conda environment
+
+```bash
+conda env create -f environment.yml
+```
+
+To load the environment
+
+```bash
+conda activate bf_its_processing
+```
+
 Download raw data from ////
 
 ```bash
@@ -13,6 +27,27 @@ cd ..
 
 ### 1. Install R packages (v3.6.3)
 
+Start an interactive R session and run the following:
+
+```R
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("ShortRead")
+BiocManager::install("dada2")
+BiocManager::install("Biostrings")
+BiocManager::install("phyloseq")
+# install.packages("tidyverse")
+install.packages("stringr")
+install.packages("data.table")
+install.packages("broom")
+install.packages("qualpalr")
+install.packages("viridis")
+install.packages("seqinr")
+install.packages("ape")
+install.packages("phytools")
+```
+
+```text
 Note, if you run into a problem with the magick++ library not installing, try one of the following in a normal terminal:
 Configuration failed to find the Magick++ library. Try installing:
  - deb: libmagick++-dev (Debian, Ubuntu)
@@ -31,29 +66,13 @@ For Ubuntu versions Trusty (14.04) and Xenial (16.04) use our PPA:
  Run (on Ubuntu):
 
  sudo apt-get install libcurl4-gnutls-dev
+ ```
 
-```R
-if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-BiocManager::install("ShortRead")
-BiocManager::install("dada2")
-BiocManager::install("Biostrings")
-BiocManager::install("phyloseq")
-install.packages("tidyverse")
-install.packages("stringr")
-install.packages("data.table")
-install.packages("broom")
-install.packages("qualpalr")
-install.packages("viridis")
-install.packages("seqinr")
-install.packages("ape")
-install.packages("phytools")
-```
 ### 2. Load required libraries
 
 ```R
 library(dada2)
-library(tidyverse)
+# library(tidyverse)
 library(reshape2)
 library(stringr)
 library(data.table)
@@ -72,7 +91,6 @@ library(phytools)
 
 ```R
 rawpath <- "raw/"
-wdpath <- "01-read_processing/" # change to where git repository was cloned
 fnFs <- sort(list.files(rawpath, pattern="_R1_001.fastq.gz", full.names=T))
 fnRs <- sort(list.files(rawpath, pattern="_R2_001.fastq.gz", full.names=T))
 sample.names <- sapply(strsplit(basename(fnFs), "_"), `[`, 1)
@@ -80,40 +98,40 @@ sample.names
 ```
 
 ```text
-  [1] "EXT-BLK1" "EXT-BLK2" "EXT-BLK3" "EXT-BLK4" "EXT-BLK5" "EXT-BLK6"
-  [7] "PCR-BLK1" "PCR-BLK2" "PCR-BLK3" "PCR-BLK4" "PCR-BLK5" "TM01-01"
- [13] "TM01-03"  "TM01-04"  "TM02-02"  "TM02-03"  "TM02-04"  "TM03-01"
- [19] "TM03-02"  "TM03-03"  "TM03-04"  "TM04-01"  "TM04-02"  "TM04-03"
- [25] "TM05-01"  "TM05-02"  "TM05-03"  "TM06-01"  "TM06-02"  "TM06-03"
- [31] "TM07-01"  "TM07-02"  "TM07-03"  "TM07-04"  "TM08-01"  "TM08-02"
- [37] "TM08-03"  "TM09-01"  "TM09-02"  "TM09-03"  "TM09-04"  "TM10-01"
- [43] "TM10-03"  "TM11-02"  "TM11-04"  "TM12-01"  "TM12-02"  "TM12-03"
- [49] "TM12-04"  "TM13-01"  "TM13-02"  "TM14-01"  "TM14-02"  "TM14-03"
- [55] "TM14-04"  "TM15-02"  "TM16-01"  "TM16-02"  "TM16-03"  "TM16-04"
- [61] "TM17-01"  "TM17-02"  "TM17-03"  "TM17-04"  "TM18-01"  "TM18-02"
- [67] "TM18-03"  "TM18-04"  "TM19-01"  "TM19-02"  "TM19-03"  "TM19-04"
- [73] "TM20-01"  "TM20-02"  "TM20-03"  "TM20-04"  "TM21-01"  "TM21-02"
- [79] "TM21-03"  "TM21-04"  "TM22-03"  "TM22-04"  "TM23-01"  "TM23-02"
- [85] "TM23-04"  "TM24-01"  "TM24-03"  "TM25-01"  "TM25-02"  "TM25-03"
- [91] "TM25-04"  "TM26-01"  "TM26-02"  "TM26-03"  "TM26-04"  "TM27-01"
- [97] "TM27-03"  "TM27-04"  "TM28-01"  "TM28-02"  "TM28-03"  "TM28-04"
-[103] "TM29-02"  "TM29-03"  "TM30-01"  "YEAST"
+  [1] "EXT-BLK1" "EXT-BLK3" "EXT-BLK4" "EXT-BLK5" "EXT-BLK6" "PCR-BLK2"
+  [7] "PCR-BLK3" "PCR-BLK4" "PCR-BLK5" "TM01-01"  "TM01-03"  "TM01-04"
+ [13] "TM02-02"  "TM02-03"  "TM02-04"  "TM03-01"  "TM03-02"  "TM03-03"
+ [19] "TM03-04"  "TM04-01"  "TM04-02"  "TM04-03"  "TM05-01"  "TM05-02"
+ [25] "TM05-03"  "TM06-01"  "TM06-02"  "TM06-03"  "TM07-01"  "TM07-02"
+ [31] "TM07-03"  "TM07-04"  "TM08-01"  "TM08-02"  "TM08-03"  "TM09-01"
+ [37] "TM09-02"  "TM09-03"  "TM09-04"  "TM10-01"  "TM10-03"  "TM11-02"
+ [43] "TM11-04"  "TM12-01"  "TM12-02"  "TM12-03"  "TM12-04"  "TM13-01"
+ [49] "TM13-02"  "TM14-01"  "TM14-02"  "TM14-03"  "TM14-04"  "TM15-02"
+ [55] "TM16-01"  "TM16-02"  "TM16-03"  "TM16-04"  "TM17-01"  "TM17-02"
+ [61] "TM17-03"  "TM17-04"  "TM18-01"  "TM18-02"  "TM18-03"  "TM18-04"
+ [67] "TM19-01"  "TM19-02"  "TM19-03"  "TM19-04"  "TM20-01"  "TM20-02"
+ [73] "TM20-03"  "TM20-04"  "TM21-01"  "TM21-02"  "TM21-03"  "TM21-04"
+ [79] "TM22-03"  "TM22-04"  "TM23-01"  "TM23-02"  "TM23-04"  "TM24-01"
+ [85] "TM24-03"  "TM25-01"  "TM25-02"  "TM25-03"  "TM25-04"  "TM26-01"
+ [91] "TM26-02"  "TM26-03"  "TM26-04"  "TM27-01"  "TM27-03"  "TM27-04"
+ [97] "TM28-01"  "TM28-02"  "TM28-03"  "TM28-04"  "TM29-02"  "TM29-03"
+[103] "TM30-01"  "YEAST"
 ```
 
 ### 4. Plot quality scores
 
 ```R
-system("mkdir 01-read_processing/img")
-pdf(paste(wdpath, "img/", "forward_quality_plot.pdf", sep=""))
+system("mkdir img")
+pdf(paste("img/", "forward_quality_plot.pdf", sep=""))
 plotQualityProfile(fnFs[30:35])
 dev.off()
-pdf(paste(wdpath, "img/", "reverse_quality_plot.pdf", sep=""))
+pdf(paste("img/", "reverse_quality_plot.pdf", sep=""))
 plotQualityProfile(fnRs[30:35])
 dev.off()
 ```
 
-![forward quality plot](https://github.com/aemann01/gut_protozoa/blob/master/01-read_processing/imgs/forward_quality_plot.png)
-![reverse quality plot](https://github.com/aemann01/gut_protozoa/blob/master/01-read_processing/imgs/reverse_quality_plot.png)
+![forward quality plot](https://github.com/aemann01/burkina_faso_its/blob/master/01-read_processing/imgs/forward_quality_plot.png)
+![reverse quality plot](https://github.com/aemann01/burkina_faso_its/blob/master/01-read_processing/imgs/reverse_quality_plot.png)
 
 The reverse read quality scores are really poor -- just going to run forward reads
 
@@ -475,7 +493,11 @@ Run sequences through BLAST
 blastn -db /home/allie/refdb/nt/nt -query rep_set.fa -out rep_set.blast.out -evalue 1e-10 -outfmt 6
 ```
 
-Can now load this into MEGAN to get taxonomy information for each ASV
+Can now load this into MEGAN to get taxonomy information for each ASV. Now need to transpose the sequence table and add taxonomy information. Running this in ipython3.
+
+```python
+
+```
 
 ## Metagenomic data processing
 
@@ -484,8 +506,9 @@ Can now load this into MEGAN to get taxonomy information for each ASV
 First need to get data that matches our samples (n=59)
 
 ```bash
+mkdir raw_WGS
 cd raw_WGS
-prefetch --option-file wgs.query -O .
+prefetch --option-file ../wgs.query -O .
 mv SRR13378*/*sra .
 find -empty -type d -delete
 ls *sra | while read line; do fasterq-dump --split-files $line; done
@@ -525,17 +548,19 @@ ls *full.fa | while read line; do sed -i 's/>.*_/>/' $line; done
 ls *full.fa | while read line; do sed -i 's/\./_/' $line; done
 ```
 
+Dereplicate
+
+```bash
+vsearch --derep_fulllength all_samples.fa --output all_samples.uniq.fa
+gzip all_samples.uniq.fa 
+rm all_samples.fa 
+```
+
 Concatenate all samples and clean up
 
 ```bash
 cat *fa > all_samples.fa
 rm *full* *gz 
-```
-
-Dereplicate
-
-```bash
-vsearch --derep_fulllength all_samples.fa.gz --output all_samples.uniq.fa.gz
 ```
 
 ### 4. Assign taxonomy with KRAKEN2
