@@ -122,10 +122,10 @@ sample.names
 
 ```R
 system("mkdir img")
-pdf(paste("img/", "forward_quality_plot.pdf", sep=""))
+png(paste("img/", "forward_quality_plot.png", sep=""))
 plotQualityProfile(fnFs[30:35])
 dev.off()
-pdf(paste("img/", "reverse_quality_plot.pdf", sep=""))
+png(paste("img/", "reverse_quality_plot.png", sep=""))
 plotQualityProfile(fnRs[30:35])
 dev.off()
 ```
@@ -173,12 +173,10 @@ retained
 ```text
                                    reads.in reads.out percentage_retained
 EXT-BLK1_S10_L001_R1_001.fastq.gz       394       385            97.71574
-EXT-BLK2_S45_L001_R1_001.fastq.gz      1179      1063            90.16115
 EXT-BLK3_S58_L001_R1_001.fastq.gz        89        72            80.89888
 EXT-BLK4_S70_L001_R1_001.fastq.gz        45        43            95.55556
 EXT-BLK5_S82_L001_R1_001.fastq.gz       920       870            94.56522
 EXT-BLK6_S106_L001_R1_001.fastq.gz      293       258            88.05461
-PCR-BLK1_S75_L001_R1_001.fastq.gz      2467      2190            88.77179
 PCR-BLK2_S56_L001_R1_001.fastq.gz       113       104            92.03540
 PCR-BLK3_S117_L001_R1_001.fastq.gz      154       141            91.55844
 PCR-BLK4_S33_L001_R1_001.fastq.gz       128       121            94.53125
@@ -284,7 +282,7 @@ YEAST_S3_L001_R1_001.fastq.gz          8826      8345            94.55019
 
 ```R
 errF <- learnErrors(filtFs, multithread=T, random=T)
-png(paste(wdpath, "img/", "error_plot.png", sep=""))
+png(paste("img/", "error_plot.png", sep=""))
 plotErrors(errF, nominalQ=TRUE) 
 dev.off()
 ```
@@ -316,9 +314,9 @@ paste(samples_to_remove)
 
 ```text
  [1] "EXT-BLK1" "EXT-BLK3" "EXT-BLK4" "EXT-BLK5" "EXT-BLK6" "PCR-BLK2"
- [7] "PCR-BLK3" "PCR-BLK4" "PCR-BLK5" "TM01-01"  "TM03-02"  "TM03-03"
-[13] "TM06-02"  "TM08-02"  "TM08-03"  "TM09-03"  "TM13-02"  "TM16-03"
-[19] "TM19-01"  "TM20-04"  "TM23-01"  "TM26-04"  "TM27-04"
+ [7] "PCR-BLK3" "PCR-BLK4" "PCR-BLK5" "TM01-01"  "TM03-02"  "TM03-03" 
+[13] "TM06-02"  "TM08-02"  "TM08-03"  "TM09-03"  "TM13-02"  "TM16-03" 
+[19] "TM19-01"  "TM20-04"  "TM23-01"  "TM26-04"  "TM27-04" 
 ```
 
 ### 12. Construct sequence table
@@ -329,14 +327,14 @@ dim(seqtab)
 ```
 
 ```text
-[1]  83 713
+[1]  81 714
 ```
 
 ### 13. Sequence length distribution plot
 
 ```R
 length.histogram <- as.data.frame(table(nchar(getSequences(seqtab))))
-png(paste(wdpath, "img/", "length_hist.png", sep=""))
+png(paste("img/", "length_hist.png", sep=""))
 plot(x=length.histogram[,1], y=length.histogram[,2])
 dev.off()
 ```
@@ -351,7 +349,7 @@ dim(seqtab.nochim)
 ```
 
 ```text
-[1]  83 492
+[1]  81 491
 ```
 
 ```R
@@ -359,7 +357,7 @@ sum(seqtab.nochim)/sum(seqtab)
 ```
 
 ```text
-[1] 0.9140192
+[1] 0.9141645
 ```
 
 ### 15. Processing summary
@@ -373,90 +371,88 @@ track
 ```
 
 ```text
-         input filtered denoisedF nochimeras
-EXT-BLK2  1179     1063      1045        785
-PCR-BLK1  2467     2190      2165       1928
-TM01-03   6215     5947      5916       4993
-TM01-04  10748    10060     10042       9993
-TM02-02  14648    13938     13887      12453
-TM02-03   2846     2810      2789       2686
-TM02-04   4269     4118      4090       3886
-TM03-01   2670     2588      2565       2417
-TM03-04   3871     3122      3102       3076
-TM04-01  17762    17030     16983      16582
-TM04-02  17617    16944     16912      14699
-TM04-03  43280    41787     41755      41208
-TM05-01  21381    19045     19027      18667
-TM05-02   5604     5533      5514       5434
-TM05-03   5722     4939      4919       4910
-TM06-01  10702    10239     10194       9973
-TM06-03   6679     6568      6511       6470
-TM07-01   7115     5135      5086       4828
-TM07-02  16097    15494     15458      15322
-TM07-03   8086     7139      7130       6698
-TM07-04   7649     7546      7499       7489
-TM08-01  63566    60533     60483      59814
-TM09-01   4136     3907      3890       3208
-TM09-02  22001    20503     20447      18912
-TM09-04  30510    30277     30260      30120
-TM10-01   4031     2223      2206       1906
-TM10-03   2133     2090      2080       1953
-TM11-02   2351     2285      2269       2228
-TM11-04   6364     6086      6060       5819
-TM12-01   6741     6664      6652       5930
-TM12-02   5908     5224      5183       4969
-TM12-03   2579     2085      2070       1659
-TM12-04   1919     1761      1747       1703
-TM13-01   8868     8308      8280       7891
-TM14-01   3536     3275      3261       2104
-TM14-02   3460     2993      2985       2767
-TM14-03   9343     8008      7979       7979
-TM14-04   4972     4914      4904       4839
-TM15-02   3782     3722      3698       3677
-TM16-01  12520    12414     12400      11474
-TM16-02  29885    29444     29411      27265
-TM16-04   1857     1836      1824       1454
-TM17-01  16344    16100     16054      13938
-TM17-02   2703     2619      2584       2385
-TM17-03   3325     3218      3202       2018
-TM17-04  52502    49784     49717      44141
-TM18-01  54281    52864     52799      48936
-TM18-02  13070    12768     12705      11537
-TM18-03  41147    40778     40689      39143
-TM18-04   7017     6843      6828       6354
-TM19-02  11604    11067     11029      10958
-TM19-03  10075     9937      9924       7308
-TM19-04  36775    35864     35836      34539
-TM20-01  10324     9470      9444       7993
-TM20-02   1979     1885      1874       1764
-TM20-03  19534    19209     19168      18720
-TM21-01   9703     9611      9590       7046
-TM21-02  15332    15093     15080      11661
-TM21-03   1513     1284      1278        588
-TM21-04  16075    15105     15064      10480
-TM22-03   5627     5111      5076       4489
-TM22-04  38749    36803     36770      32289
-TM23-02  16378    15891     15849      13215
-TM23-04   6528     5409      5372       3630
-TM24-01  16759    15505     15472       9734
-TM24-03   5574     5410      5376       4946
-TM25-01  78890    78009     77982      72165
-TM25-02   1929     1838      1806       1712
-TM25-03   1473     1408      1380       1323
-TM25-04   8793     8710      8694       8400
-TM26-01  54689    53289     53262      46882
-TM26-02   2744     2664      2653       2156
-TM26-03   3473     3399      3383       3100
-TM27-01   9093     8840      8835       5661
-TM27-03   9656     9592      9581       8854
-TM28-01   4273     3859      3834       3419
-TM28-02  10843    10587     10562       9465
-TM28-03   7848     7286      7216       5551
-TM28-04  12074    11925     11916      11833
-TM29-02  15465    14997     14951      13782
-TM29-03  10048     9811      9794       9439
-TM30-01  57001    54925     54886      49387
-YEAST     8826     8345      8321       8266
+        input filtered denoisedF nochimeras
+TM01-03  6215     5947      5923       4991
+TM01-04 10748    10060     10042       9993
+TM02-02 14648    13938     13899      12453
+TM02-03  2846     2810      2789       2686
+TM02-04  4269     4118      4109       3904
+TM03-01  2670     2588      2565       2417
+TM03-04  3871     3122      3102       3076
+TM04-01 17762    17030     16983      16582
+TM04-02 17617    16944     16912      14699
+TM04-03 43280    41787     41764      41203
+TM05-01 21381    19045     19027      18667
+TM05-02  5604     5533      5514       5434
+TM05-03  5722     4939      4919       4910
+TM06-01 10702    10239     10198       9977
+TM06-03  6679     6568      6510       6469
+TM07-01  7115     5135      5091       4833
+TM07-02 16097    15494     15461      15326
+TM07-03  8086     7139      7132       6700
+TM07-04  7649     7546      7497       7487
+TM08-01 63566    60533     60483      59814
+TM09-01  4136     3907      3890       3208
+TM09-02 22001    20503     20469      18934
+TM09-04 30510    30277     30260      30120
+TM10-01  4031     2223      2206       1906
+TM10-03  2133     2090      2078       1951
+TM11-02  2351     2285      2269       2228
+TM11-04  6364     6086      6060       5819
+TM12-01  6741     6664      6652       5930
+TM12-02  5908     5224      5183       4969
+TM12-03  2579     2085      2070       1659
+TM12-04  1919     1761      1747       1703
+TM13-01  8868     8308      8280       7891
+TM14-01  3536     3275      3261       2104
+TM14-02  3460     2993      2983       2765
+TM14-03  9343     8008      7979       7979
+TM14-04  4972     4914      4904       4839
+TM15-02  3782     3722      3698       3677
+TM16-01 12520    12414     12400      11474
+TM16-02 29885    29444     29411      27265
+TM16-04  1857     1836      1821       1451
+TM17-01 16344    16100     16080      13935
+TM17-02  2703     2619      2584       2385
+TM17-03  3325     3218      3202       2018
+TM17-04 52502    49784     49717      44146
+TM18-01 54281    52864     52798      48932
+TM18-02 13070    12768     12705      11541
+TM18-03 41147    40778     40689      39143
+TM18-04  7017     6843      6828       6354
+TM19-02 11604    11067     11029      10958
+TM19-03 10075     9937      9924       7308
+TM19-04 36775    35864     35835      34537
+TM20-01 10324     9470      9437       7986
+TM20-02  1979     1885      1868       1758
+TM20-03 19534    19209     19172      18719
+TM21-01  9703     9611      9590       7048
+TM21-02 15332    15093     15063      11644
+TM21-03  1513     1284      1278        588
+TM21-04 16075    15105     15064      10480
+TM22-03  5627     5111      5076       4489
+TM22-04 38749    36803     36768      32287
+TM23-02 16378    15891     15824      13193
+TM23-04  6528     5409      5368       3626
+TM24-01 16759    15505     15470       9731
+TM24-03  5574     5410      5376       4946
+TM25-01 78890    78009     77982      72167
+TM25-02  1929     1838      1791       1697
+TM25-03  1473     1408      1379       1322
+TM25-04  8793     8710      8696       8402
+TM26-01 54689    53289     53268      46880
+TM26-02  2744     2664      2653       2156
+TM26-03  3473     3399      3387       3105
+TM27-01  9093     8840      8835       5661
+TM27-03  9656     9592      9575       8848
+TM28-01  4273     3859      3834       3419
+TM28-02 10843    10587     10562       9464
+TM28-03  7848     7286      7249       5584
+TM28-04 12074    11925     11914      11831
+TM29-02 15465    14997     14951      13781
+TM29-03 10048     9811      9794       9439
+TM30-01 57001    54925     54884      49387
+YEAST    8826     8345      8315       8260
 ```
 
 ### 16. Save output
@@ -490,14 +486,23 @@ ls *gz | parallel 'tar xzf {}'
 Run sequences through BLAST
 
 ```bash
-blastn -db /home/allie/refdb/nt/nt -query rep_set.fa -out rep_set.blast.out -evalue 1e-10 -outfmt 6
+blastn -db /home/allie/refdb/nt/nt -query rep_set.fa -out rep_set.blast.out -evalue 1e-10 -outfmt "6 qseqid sacc sseqid pident qlen length mismatch gapopen gaps evalue bitscore nident"
 ```
 
-Can now load this into MEGAN to get taxonomy information for each ASV. Now need to transpose the sequence table and add taxonomy information. Running this in ipython3.
+Use blast get LCA to get taxonomic assignments. Clone and initiate the repository.
 
-```python
+```bash
+git clone https://github.com/frederikseersholm/blast_getLCA
+cd blast_getLCA
+bash prepare_getLCA_script.sh
+```
+
+Get taxonomic assignments
+
+```bash
 
 ```
+
 
 ## Metagenomic data processing
 
@@ -511,7 +516,7 @@ cd raw_WGS
 prefetch --option-file ../wgs.query -O .
 mv SRR13378*/*sra .
 find -empty -type d -delete
-ls *sra | while read line; do fasterq-dump --split-files $line; done
+ls *sra | parallel 'fasterq-dump --split-files {}'
 rm *sra
 ```
 
@@ -538,6 +543,37 @@ rm *pair2* *singleton* *discarded*
 ls *settings | sed 's/.settings//' | parallel 'cat {}.collapsed.gz {}.pair1.truncated.gz {}.collapsed.truncated.gz > {}.full.gz'
 rm *collapsed* *pair1* *fastq
 ```
+
+Get a file of accession numbers and original sample IDs
+
+```bash
+awk -F"\t" '{print $1, "\t", $33}' sra.info | sed 's/ //g' > wgs.rename
+```
+
+Change sequence headers to sample IDs
+
+```bash
+tagSeq()
+{
+    set $file
+    for i in $name; do
+        sed "s/^>/>${i}_/" ${1} > ${1}_fix
+        shift
+    done
+}
+name=$(awk '{print $2}' ../wgs.rename)
+file=$(awk '{print $1}' ../wgs.rename)
+tagSeq
+rm *fna
+cat *fix > mock_oral.fa
+rm *fix
+```
+
+
+
+
+
+
 
 Convert to fasta and modify sequence headers
 
