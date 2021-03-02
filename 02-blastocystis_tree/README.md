@@ -20,16 +20,23 @@ Pull Blastocystis reads
 grep "Blastocystis" ~/refdb/ITSoneDB_qiime/99_ref_ITSoneDB.oneline.fa -A 1 | sed 's/--//' > blasto_ref.fa
 ```
 
+Concatenate these with your Blastocystis ASVs to cover a wider range of potential subtypes
+
+```bash
+grep "Blastocystis" ../01-read_processing/rep_set.tax.txt | awk '{print $1}' | while read line; do grep -w $line ../01-read_processing/rep_set.fa -A 1 ; done > blasto_asvs.fa
+cat blasto_asvs.fa blasto_ref.fa > all_blasto.fa
+```
+
 Now can use this to pull more references 
 
 ```bash
-blastn -evalue 1e-10 -outfmt 6 -db /home/allie/refdb/nt/nt -query blasto_ref.fa -out blasto_ref.blast.out
+blastn -evalue 1e-10 -outfmt 6 -db /home/allie/refdb/nt/nt -query all_blasto.fa -out blast.out
 ```
 
-Pull only those hits that are at least 90bp and 89% identity
+Pull only those hits that are at least 25bp and 90% identity
 
 ```bash
-awk -F"\t" '$3>=90.0 && $4>=90' blasto_ref.blast.out > good.hits
+awk -F"\t" '$3>=90.0 && $4>=25' blast.out > good.hits
 ```
 
 Get unique subjects and coordinates 
@@ -46,7 +53,7 @@ python3 ncbi_nuccore_coordinate_pull.py -i ncbi.query -s 1 -fc 2 -rc 3 > ncbi_hi
 
 ## 2. Dereplicate reads
 
-First concatenate ITSoneDB and ncbi sequences
+First concatenate ITSoneDB and ncbi sequences (no ASVs in reference tree)
 
 ```bash
 cat ncbi_hits.fa blasto_ref.fa > full_ref.fa
@@ -75,6 +82,9 @@ mafft --auto full_ref.uniq.fa > full_ref.align.fa
 Build tree
 
 ```bash
+rm *ref.tre
 raxmlHPC-PTHREADS -T 8 -m GTRCAT -c 25 -e 0.001 -p 31514 -f a -N 100 -x 02938 -n ref.tre -s full_ref.align.fa
 ```
+
+## 4. Build placement tree with newly generated ITS sequences 
 

@@ -1,0 +1,8 @@
+name: gut_protozoa
+channels:
+  - defaults
+  - bioconda
+  - conda-forge
+dependencies:
+  - anaconda::bipython=1.78
+  - anaconda::more-itertools=7.2.0
