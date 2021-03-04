@@ -486,22 +486,26 @@ ls *gz | parallel 'tar xzf {}'
 Run sequences through BLAST
 
 ```bash
-blastn -db /home/allie/refdb/nt/nt -query rep_set.fa -out rep_set.blast.out -evalue 1e-10 -outfmt "6 qseqid sacc sseqid pident qlen length mismatch gapopen gaps evalue bitscore nident"
+blastn -db /home/allie/refdb/nt/nt -query rep_set.fa -out rep_set.blast.out -evalue 1e-10 -outfmt 6
 ```
 
-Use blast get LCA to get taxonomic assignments. Clone and initiate the repository.
+Get taxonomic assignments with MEGAN6 and clean up
 
 ```bash
-git clone https://github.com/frederikseersholm/blast_getLCA
-cd blast_getLCA
-bash prepare_getLCA_script.sh
+sed 's/;/\t/g' rep_set.tax.txt | sed 's/"//g' > temp
+mv temp rep_set.tax.txt
 ```
 
-Get taxonomic assignments
+Next need to merge ASV and taxonomy information (ASVs with no hits are dropped).
 
-```bash
-
+```R
+seq.tab <- read.table("sequence_table.merged.txt", sep="\t", header=T, row.names=1)
+tax.tab <- read.table("rep_set.lowest-tax.txt", sep="\t", header=T, row.names=1)
+tran.seq <- t(seq.tab)
+merge.tab <- merge(tran.seq, tax.tab, by=0, all=TRUE)
+write.table(merge.tab, file="sequence_table.taxonomy.txt", quote=F, sep="\t")
 ```
+
 
 
 ## Metagenomic data processing
@@ -534,6 +538,10 @@ Trim off adapters
 ls *_1* | sed 's/_1.fastq//' | parallel 'AdapterRemoval --file1 {}_1.fastq --file2 {}_2.fastq --trimns --trimqualities --minquality 30 --gzip --collapse --basename {} --minlength 100 --adapter1 AGATCGGAAGAGCACACGTCTGAACTCCAGTCACNNNNNNATCTCGTATGCCGTCTTCTGCTTG --adapter2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT'
 ```
 
+Trim poly G tails
+
+cutadapt -a "A{100}" -o output.fastq input.fastq
+
 ### 3. Dereplication
 
 Keep collapsed, singletons, high quality forward reads
@@ -549,6 +557,23 @@ Get a file of accession numbers and original sample IDs
 ```bash
 awk -F"\t" '{print $1, "\t", $33}' sra.info | sed 's/ //g' > wgs.rename
 ```
+
+Convert to fasta
+
+```bash
+ls *full.gz | parallel 'gzip -d {}'
+ls *full | parallel 'seqtk seq -a {} > {}.fa'
+rm *full
+```
+
+Dereplicate
+
+```bash
+ls *fa | sed 's/.full.fa//' | while read line; do vsearch --derep_fulllength $line.full.fa --output $line.uniq.fa; done
+rm *full.fa
+```
+
+
 
 Change sequence headers to sample IDs
 
@@ -575,22 +600,7 @@ rm *fix
 
 
 
-Convert to fasta and modify sequence headers
 
-```bash
-ls *full.gz | parallel 'gzip -d {}'
-ls *full | parallel 'seqtk seq -a {} > {}.fa'
-ls *full.fa | while read line; do sed -i 's/>.*_/>/' $line; done
-ls *full.fa | while read line; do sed -i 's/\./_/' $line; done
-```
-
-Dereplicate
-
-```bash
-vsearch --derep_fulllength all_samples.fa --output all_samples.uniq.fa
-gzip all_samples.uniq.fa 
-rm all_samples.fa 
-```
 
 Concatenate all samples and clean up
 

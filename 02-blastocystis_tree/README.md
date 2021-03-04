@@ -1,5 +1,25 @@
 # Blastocystis reference and placement tree
 
+## Setup
+
+Create Blastocystis database/tree build conda environment
+
+```bash
+conda env create environment.yml
+```
+
+Load conda environment
+
+```bash
+conda activate bf_its_blasto
+```
+
+To deactivate environment
+
+```bash
+conda deactivate bf_its_blasto
+```
+
 ## 1. Generate reference database
 
 ```bash
@@ -20,7 +40,7 @@ Pull Blastocystis reads
 grep "Blastocystis" ~/refdb/ITSoneDB_qiime/99_ref_ITSoneDB.oneline.fa -A 1 | sed 's/--//' > blasto_ref.fa
 ```
 
-Concatenate these with your Blastocystis ASVs to cover a wider range of potential subtypes
+Concatenate these with your Blastocystis ASVs and all those in NCBI nt (search details: ("Blastocystis"[Organism] OR blastocystis[All Fields]) AND internal[All Fields] AND transcribed[All Fields] AND spacer[All Fields]) to cover a wider range of potential subtypes
 
 ```bash
 grep "Blastocystis" ../01-read_processing/rep_set.tax.txt | awk '{print $1}' | while read line; do grep -w $line ../01-read_processing/rep_set.fa -A 1 ; done > blasto_asvs.fa
