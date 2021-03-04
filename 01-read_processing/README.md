@@ -130,8 +130,8 @@ plotQualityProfile(fnRs[30:35])
 dev.off()
 ```
 
-![forward quality plot](https://github.com/aemann01/burkina_faso_its/blob/master/01-read_processing/img/forward_quality_plot.png)
-![reverse quality plot](https://github.com/aemann01/burkina_faso_its/blob/master/01-read_processing/img/reverse_quality_plot.png)
+![forward quality plot](img/forward_quality_plot.png)
+![reverse quality plot](img/reverse_quality_plot.png)
 
 The reverse read quality scores are really poor -- just going to run forward reads
 
@@ -287,7 +287,7 @@ plotErrors(errF, nominalQ=TRUE)
 dev.off()
 ```
 
-![error plot](https://github.com/aemann01/gut_protozoa/blob/master/01-read_processing/img/error_plot.png)
+![error plot](img/error_plot.png)
 
 ### 9. Dereplication
 
@@ -339,7 +339,7 @@ plot(x=length.histogram[,1], y=length.histogram[,2])
 dev.off()
 ```
 
-![length histogram](https://github.com/aemann01/gut_protozoa/blob/master/01-read_processing/img/length_hist.png)
+![length histogram](img/length_hist.png)
 
 ### 14. Remove chimeras
 
