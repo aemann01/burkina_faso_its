@@ -130,8 +130,8 @@ plotQualityProfile(fnRs[30:35])
 dev.off()
 ```
 
-![forward quality plot](https://github.com/aemann01/burkina_faso_its/blob/master/01-read_processing/imgs/forward_quality_plot.png)
-![reverse quality plot](https://github.com/aemann01/burkina_faso_its/blob/master/01-read_processing/imgs/reverse_quality_plot.png)
+![forward quality plot](https://github.com/aemann01/burkina_faso_its/blob/master/01-read_processing/img/forward_quality_plot.png)
+![reverse quality plot](https://github.com/aemann01/burkina_faso_its/blob/master/01-read_processing/img/reverse_quality_plot.png)
 
 The reverse read quality scores are really poor -- just going to run forward reads
 
@@ -287,7 +287,7 @@ plotErrors(errF, nominalQ=TRUE)
 dev.off()
 ```
 
-![error plot](https://github.com/aemann01/gut_protozoa/blob/master/01-read_processing/imgs/error_plot.png)
+![error plot](https://github.com/aemann01/gut_protozoa/blob/master/01-read_processing/img/error_plot.png)
 
 ### 9. Dereplication
 
@@ -503,10 +503,8 @@ seq.tab <- read.table("sequence_table.merged.txt", sep="\t", header=T, row.names
 tax.tab <- read.table("rep_set.lowest-tax.txt", sep="\t", header=T, row.names=1)
 tran.seq <- t(seq.tab)
 merge.tab <- merge(tran.seq, tax.tab, by=0, all=TRUE)
-write.table(merge.tab, file="sequence_table.taxonomy.txt", quote=F, sep="\t")
+write.table(merge.tab, file="sequence_table.taxonomy.txt", quote=F, sep="\t", row.names=F)
 ```
-
-
 
 ## Metagenomic data processing
 
