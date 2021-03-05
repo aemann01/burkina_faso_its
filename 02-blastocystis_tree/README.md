@@ -54,10 +54,10 @@ Now can use this to pull more references (change -db to path to your locally ins
 blastn -evalue 1e-10 -outfmt 6 -db /home/allie/refdb/nt/nt -query all_blasto.fa -out blast.out
 ```
 
-Pull only those hits that are at least 25bp and 85% identity to account for high genetic diversity in Blastocystis and potential short ITS1 regions
+Pull only those hits that are at least 100bp and 85% identity to account for high genetic diversity in Blastocystis
 
 ```bash
-awk -F"\t" '$3>=85.0 && $4>=25' blast.out > good.hits
+awk -F"\t" '$3>=85.0 && $4>=100' blast.out > good.hits
 ```
 
 Get unique subjects and coordinates 
