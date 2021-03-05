@@ -533,7 +533,7 @@ AdapterRemoval --identify-adapters --file1 SRR13378546_1.fastq --file2 SRR133785
 Trim off adapters
 
 ```bash
-ls *_1* | sed 's/_1.fastq//' | parallel 'AdapterRemoval --file1 {}_1.fastq --file2 {}_2.fastq --trimns --trimqualities --minquality 30 --gzip --collapse --basename {} --minlength 100 --adapter1 AGATCGGAAGAGCACACGTCTGAACTCCAGTCACNNNNNNATCTCGTATGCCGTCTTCTGCTTG --adapter2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT'
+ls *_1* | sed 's/_1.fastq.gz//' | parallel 'AdapterRemoval --file1 {}_1.fastq.gz --file2 {}_2.fastq.gz --trimns --trimqualities --minquality 30 --gzip --collapse --basename {} --minlength 100 --adapter1 AGATCGGAAGAGCACACGTCTGAACTCCAGTCACNNNNNNATCTCGTATGCCGTCTTCTGCTTG --adapter2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT'
 ```
 
 ### 3. Dereplication
@@ -544,85 +544,40 @@ Keep collapsed, singletons, high quality forward reads
 rm *pair2* *singleton* *discarded*
 ls *settings | sed 's/.settings//' | parallel 'cat {}.collapsed.gz {}.pair1.truncated.gz {}.collapsed.truncated.gz > {}.full.gz'
 rm *collapsed* *pair1*
-ls *fastq | parallel 'gzip {}' &
-```
-
-Get a file of accession numbers and original sample IDs
-
-```bash
-awk -F"\t" '{print $1, "\t", $33}' sra.info | sed 's/ //g' > wgs.rename
 ```
 
 Convert to fasta
 
 ```bash
 ls *full.gz | parallel 'gzip -d {}'
-
-STOPPED HERE
-
-
-
-
-
 ls *full | parallel 'seqtk seq -a {} > {}.fa'
-rm *full
 ```
 
-Dereplicate
+Dereplicate and cluster at 98% identity
 
 ```bash
-ls *fa | sed 's/.full.fa//' | while read line; do vsearch --derep_fulllength $line.full.fa --output $line.uniq.fa; done
+ls *fa | sed 's/.full.fa//' | parallel 'vsearch --derep_fulllength {}.full.fa --output {}.uniq.fa'
 rm *full.fa
-```
-
-
-
-Change sequence headers to sample IDs
-
-```bash
-tagSeq()
-{
-    set $file
-    for i in $name; do
-        sed "s/^>/>${i}_/" ${1} > ${1}_fix
-        shift
-    done
-}
-name=$(awk '{print $2}' ../wgs.rename)
-file=$(awk '{print $1}' ../wgs.rename)
-tagSeq
-rm *fna
-cat *fix > mock_oral.fa
-rm *fix
-```
-
-
-
-
-
-
-
-
-
-Concatenate all samples and clean up
-
-```bash
-cat *fa > all_samples.fa
-rm *full* *gz 
 ```
 
 ### 4. Assign taxonomy with KRAKEN2
 
 Build and index database (only run once, takes a long time to complete)
 
-```R
-system("kraken2-build --standard --db nt")
+```bash
+kraken2-build --standard --db nt
 ```
 
 Assign taxonomy using KRAKEN2
 
-```R
+```bash
 kraken2 --db ~/kraken_nt/ --threads 8 --use-names --output all_samples.uniq.tax all_samples.uniq.fa.gz
+```
+
+Merge output files into single otu table
+
+```bash
+kraken-biom S1.txt S2.txt --fmt tsv --gzip -o table.tsv
 ```
 
 
