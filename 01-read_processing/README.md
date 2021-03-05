@@ -536,20 +536,6 @@ Trim off adapters
 ls *_1* | sed 's/_1.fastq//' | parallel 'AdapterRemoval --file1 {}_1.fastq --file2 {}_2.fastq --trimns --trimqualities --minquality 30 --gzip --collapse --basename {} --minlength 100 --adapter1 AGATCGGAAGAGCACACGTCTGAACTCCAGTCACNNNNNNATCTCGTATGCCGTCTTCTGCTTG --adapter2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT'
 ```
 
-
-
-STOPPED HERE
-
-
-
-
-
-
-
-
-
-
-
 ### 3. Dereplication
 
 Keep collapsed, singletons, high quality forward reads
@@ -557,7 +543,8 @@ Keep collapsed, singletons, high quality forward reads
 ```bash
 rm *pair2* *singleton* *discarded*
 ls *settings | sed 's/.settings//' | parallel 'cat {}.collapsed.gz {}.pair1.truncated.gz {}.collapsed.truncated.gz > {}.full.gz'
-rm *collapsed* *pair1* *fastq
+rm *collapsed* *pair1*
+ls *fastq | parallel 'gzip {}' &
 ```
 
 Get a file of accession numbers and original sample IDs
@@ -566,12 +553,11 @@ Get a file of accession numbers and original sample IDs
 awk -F"\t" '{print $1, "\t", $33}' sra.info | sed 's/ //g' > wgs.rename
 ```
 
-
-
-
 Trim poly G tails
 
-cutadapt -a "A{100}" -o output.fastq input.fastq
+```bash
+ls *full.gz | sed 's/.full.gz//' | parallel 'cutadapt -a "G{100}" -o {}.trim.fq.gz {}.full.gz 1>{}.trim.out'
+```
 
 Convert to fasta
 
