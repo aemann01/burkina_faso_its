@@ -553,16 +553,17 @@ Get a file of accession numbers and original sample IDs
 awk -F"\t" '{print $1, "\t", $33}' sra.info | sed 's/ //g' > wgs.rename
 ```
 
-Trim poly G tails
-
-```bash
-ls *full.gz | sed 's/.full.gz//' | parallel 'cutadapt -a "G{100}" -o {}.trim.fq.gz {}.full.gz 1>{}.trim.out'
-```
-
 Convert to fasta
 
 ```bash
 ls *full.gz | parallel 'gzip -d {}'
+
+STOPPED HERE
+
+
+
+
+
 ls *full | parallel 'seqtk seq -a {} > {}.fa'
 rm *full
 ```
