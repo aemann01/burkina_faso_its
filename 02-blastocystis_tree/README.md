@@ -37,26 +37,27 @@ awk '!/^>/ { printf "%s", $0; n = "\n" } /^>/ { print n $0; n = "" } END { print
 Pull Blastocystis reads 
 
 ```bash
-grep "Blastocystis" ~/refdb/ITSoneDB_qiime/99_ref_ITSoneDB.oneline.fa -A 1 | sed 's/--//' > blasto_ref.fa
+cd ..
+grep "Blastocystis" ITSoneDB_qiime/99_ref_ITSoneDB.oneline.fa -A 1 | sed 's/--//' > blasto_ref.fa
 ```
 
 Concatenate these with your Blastocystis ASVs and all those in NCBI nt (search details: ("Blastocystis"[Organism] OR blastocystis[All Fields]) AND internal[All Fields] AND transcribed[All Fields] AND spacer[All Fields]) to cover a wider range of potential subtypes
 
 ```bash
 grep "Blastocystis" ../01-read_processing/rep_set.tax.txt | awk '{print $1}' | while read line; do grep -w $line ../01-read_processing/rep_set.fa -A 1 ; done > blasto_asvs.fa
-cat blasto_asvs.fa blasto_ref.fa > all_blasto.fa
+cat blasto_asvs.fa blasto_ref.fa ncbi_nt_blasto.fasta > all_blasto.fa
 ```
 
-Now can use this to pull more references 
+Now can use this to pull more references (change -db to path to your locally installed nt blast database)
 
 ```bash
 blastn -evalue 1e-10 -outfmt 6 -db /home/allie/refdb/nt/nt -query all_blasto.fa -out blast.out
 ```
 
-Pull only those hits that are at least 25bp and 90% identity
+Pull only those hits that are at least 25bp and 85% identity to account for high genetic diversity in Blastocystis and potential short ITS1 regions
 
 ```bash
-awk -F"\t" '$3>=90.0 && $4>=25' blast.out > good.hits
+awk -F"\t" '$3>=85.0 && $4>=25' blast.out > good.hits
 ```
 
 Get unique subjects and coordinates 
@@ -70,6 +71,16 @@ Pull reads by genome coordinates
 ```bash
 python3 ncbi_nuccore_coordinate_pull.py -i ncbi.query -s 1 -fc 2 -rc 3 > ncbi_hits.fa 
 ```
+
+
+STOPPED HERE
+
+
+
+
+
+
+
 
 ## 2. Dereplicate reads
 

@@ -536,9 +536,19 @@ Trim off adapters
 ls *_1* | sed 's/_1.fastq//' | parallel 'AdapterRemoval --file1 {}_1.fastq --file2 {}_2.fastq --trimns --trimqualities --minquality 30 --gzip --collapse --basename {} --minlength 100 --adapter1 AGATCGGAAGAGCACACGTCTGAACTCCAGTCACNNNNNNATCTCGTATGCCGTCTTCTGCTTG --adapter2 AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT'
 ```
 
-Trim poly G tails
 
-cutadapt -a "A{100}" -o output.fastq input.fastq
+
+STOPPED HERE
+
+
+
+
+
+
+
+
+
+
 
 ### 3. Dereplication
 
@@ -555,6 +565,13 @@ Get a file of accession numbers and original sample IDs
 ```bash
 awk -F"\t" '{print $1, "\t", $33}' sra.info | sed 's/ //g' > wgs.rename
 ```
+
+
+
+
+Trim poly G tails
+
+cutadapt -a "A{100}" -o output.fastq input.fastq
 
 Convert to fasta
 
