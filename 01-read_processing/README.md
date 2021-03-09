@@ -2,20 +2,6 @@
 
 ## Setup
 
-Your working directory should now be 01-read_processing 
-
-Install the read processing conda environment
-
-```bash
-conda env create -f environment.yml
-```
-
-To load the environment
-
-```bash
-conda activate bf_its_processing
-```
-
 Download raw data from ////
 
 ```bash
@@ -553,38 +539,30 @@ ls *full.gz | parallel 'gzip -d {}'
 ls *full | parallel 'seqtk seq -a {} > {}.fa'
 ```
 
-Dereplicate and cluster at 98% identity
+Sort by length and dereplicate
 
 ```bash
-ls *fa | sed 's/.full.fa//' | parallel 'vsearch --derep_fulllength {}.full.fa --output {}.uniq.fa'
+ls *fa | sed 's/.full.fa//' | parallel 'vsearch --sortbylength {}.full.fa --output {}.sort.fa'
+ls *sort.fa | sed 's/.sort.fa//' | parallel -j6 'vsearch --derep_fulllength {}.sort.fa --output {}.uniq.fa'
 rm *full.fa
+ls *uniq.fa | parallel 'gzip {}'
 ```
 
-### 4. Assign taxonomy with KRAKEN2
-
-Build and index database (only run once, takes a long time to complete)
+### 4. Assign taxonomy with MetaPhlan3
 
 ```bash
-kraken2-build --standard --db nt
+ls *uniq.fa.gz | sed 's/.uniq.fa.gz//' | while read line; do metaphlan $line.uniq.fa.gz --input_type fasta --nproc 8 -t rel_ab_w_read_stats --biom ../$line.biom -o ../$line.metaphlan.out ; done
 ```
 
-Assign taxonomy using KRAKEN2
+Merge all taxonomic profiles
 
 ```bash
-kraken2 --db ~/kraken_nt/ --threads 8 --use-names --output all_samples.uniq.tax all_samples.uniq.fa.gz
+merge_metaphlan_tables.py *metaphlan.out > full.metaplhan.out
 ```
 
-Merge output files into single otu table
+Get species only table and generate tsv + taxonomy file for phyloseq
 
 ```bash
-kraken-biom S1.txt S2.txt --fmt tsv --gzip -o table.tsv
+
 ```
-
-
-
-
-
-
-
-
 

@@ -1,8 +1,19 @@
-name: gut_protozoa
+name: bf_its
 channels:
   - defaults
-  - bioconda
   - conda-forge
+  - bioconda
+  - anaconda
 dependencies:
-  - anaconda::bipython=1.78
-  - anaconda::more-itertools=7.2.0
+  - conda-forge::r-base=3.6.3
+  - bioconda::cutadapt=3.2
+  - anaconda::wget=1.20.1
+  - conda-forge::parallel=20210222
+  - bioconda::blast=2.10.1
+  - bioconda::sra-tools=2.10.9
+  - bioconda::adapterremoval=2.3.1
+  - bioconda::seqtk=1.3
+  - bioconda::vsearch=2.15.2
+  - bioconda::mafft=7.475
+  - bioconda::raxml=8.2.12
+  - bioconda::metaphlan=3.0.7
