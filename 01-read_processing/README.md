@@ -554,15 +554,23 @@ ls *uniq.fa | parallel 'gzip {}'
 ls *uniq.fa.gz | sed 's/.uniq.fa.gz//' | while read line; do metaphlan $line.uniq.fa.gz --input_type fasta --nproc 8 -t rel_ab_w_read_stats --biom ../$line.biom -o ../$line.metaphlan.out ; done
 ```
 
-Merge all taxonomic profiles
+Pull only species level assignments for each sample, read counts
 
 ```bash
-merge_metaphlan_tables.py *metaphlan.out > full.metaplhan.out
+ls *metaphlan.out | sed 's/.metaphlan.out//' | while read line; do awk -F"\t" '{print $1, "\t", $5}' $line.metaphlan.out | grep -v "^#" | grep "s__" | sed "1 i\taxon\t${line}" > $line.species.txt; done
 ```
 
-Get species only table and generate tsv + taxonomy file for phyloseq
+Merge all files together
 
 ```bash
-
+python merge_df.py
 ```
+
+Clean up (round float to int)
+
+```bash
+sed 's/.0//g' merge_metaphlan.out
+```
+
+From this you can generate your sequence table and taxonomy table to import into phyloseq
 
