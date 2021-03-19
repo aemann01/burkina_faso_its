@@ -17,3 +17,4 @@ dependencies:
   - bioconda::mafft=7.475
   - bioconda::raxml=8.2.12
   - bioconda::metaphlan=3.0.7
+  - bioconda::sina=1.7.2
