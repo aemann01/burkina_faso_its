@@ -1,5 +1,7 @@
 # burkina_faso_its
 
+[![DOI](https://zenodo.org/badge/342699938.svg)](https://zenodo.org/badge/latestdoi/342699938)
+
 This repository describes the analysis performed in the paper Mann et al. 2021 ///////
 
 ## Setup
