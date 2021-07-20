@@ -36,3 +36,5 @@ To turn off the environment
 ```bash
 conda deactivate
 ```
+
+To run either the eukaryotic or whole genome shotgun sequencing R code in Binder: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/aemann01/burkina_faso_its/HEAD)
