@@ -492,6 +492,7 @@ merge.tab <- merge(tran.seq, tax.tab, by=0, all=TRUE)
 write.table(merge.tab, file="sequence_table.taxonomy.txt", quote=F, sep="\t", row.names=F)
 ```
 
+
 ## Metagenomic data processing
 
 ### 1. Pull data (from Jacobson et al. 2021)

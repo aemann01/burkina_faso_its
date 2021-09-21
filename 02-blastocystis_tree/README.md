@@ -138,4 +138,7 @@ rm *cons.tre
 raxmlHPC-PTHREADS-SSE3 -f a -N 100 -G 0.2 -m GTRCAT -n cons.tre -s queryPlus.trimal.fa -g RAxML_bestTree.ref.tre -T 4 -x 25734 -p 25793
 ```
 
+Add subtype information to ASV table -- which subtypes are more common? How often do you find multi ST infections?
+
+
 
